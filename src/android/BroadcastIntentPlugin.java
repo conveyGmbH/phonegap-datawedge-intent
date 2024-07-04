@@ -101,19 +101,7 @@ public class BroadcastIntentPlugin extends CordovaPlugin {
 		String versionCurrent="";
 		// Find out current DW version, if the version is 6.3 or higher then we know it support intent config
 		// Then we can send CartScan profile via intent
-		try {
-			PackageInfo pInfo = cordova.getActivity().getPackageManager().getPackageInfo(DW_PKG_NAME, PackageManager.GET_META_DATA);
-			versionCurrent = pInfo.versionName;
-			Log.i(TAG, "BroadcastIntentPlugin.initialize: versionCurrent=" + versionCurrent);
-
-			result = compareVersionString(versionCurrent, DW_INTENT_SUPPORT_VERSION);
-			Log.i(TAG, "BroadcastIntentPlugin.initialize: result=" + result);
-		} catch (PackageManager.NameNotFoundException e1) {
-			Log.e(TAG, "BroadcastIntentPlugin.initialize: DW_PKG_NAME=" + DW_PKG_NAME + " NameNotFoundException:", e1);
-		}
-		if (result >= 0) {
-			createDataWedgeProfile();
-		}
+		createDataWedgeProfile();
 		Log.d(TAG, "BroadcastIntentPlugin.initialize returned!");
 	}
 
@@ -310,25 +298,34 @@ public class BroadcastIntentPlugin extends CordovaPlugin {
 
 		//TO recieve the scanned via intent, the keystroke must disabled.
 		try {
-			Bundle configBundle = new Bundle();
-			Bundle bConfig = new Bundle();
-			Bundle bParams = new Bundle();
+			Bundle profileConfig = new Bundle();
+			profileConfig.putString("PROFILE_NAME", "BroadcastIntentPlugin");
+			profileConfig.putString("PROFILE_ENABLED", "true");
+			profileConfig.putString("CONFIG_MODE", CONFIG_MODE_UPDATE);  // Update specified settings in profile
 
-			bParams.putString("keystroke_output_enabled", "false");
+			Bundle barcodeConfig = new Bundle();
+			barcodeConfig.putString("PLUGIN_NAME", "BARCODE");
+			barcodeConfig.putString("RESET_CONFIG", "true");
 
-			configBundle.putString(PROFILE_NAME, "BroadcastIntentPlugin");
-			configBundle.putString(PROFILE_STATUS, "true");
-			configBundle.putString(CONFIG_MODE, CONFIG_MODE_UPDATE);
+			Bundle barcodeProps = new Bundle();
+			barcodeProps.putString("scanner_selection", "auto");
+			barcodeProps.putString("scanner_input_enabled", "true");
+			barcodeProps.putString("decoder_code128", "true");
+			barcodeProps.putString("decoder_i2of5", "true");
+			barcodeProps.putString("decoder_i2of5_length1", "13");
 
-			bConfig.putString("PLUGIN_NAME", "KEYSTROKE");
-			bConfig.putString("RESET_CONFIG", "false");
+			barcodeConfig.putBundle("PARAM_LIST", barcodeProps);
 
-			bConfig.putBundle("PARAM_LIST", bParams);
-			configBundle.putBundle("PLUGIN_CONFIG", bConfig);
+			profileConfig.putBundle("PLUGIN_CONFIG", barcodeConfig);
 
+			Bundle appConfig = new Bundle();
+			appConfig.putString("PACKAGE_NAME", myPackageName);
+			appConfig.putStringArray("ACTIVITY_LIST", new String[]{myActivityName});
+			profileConfig.putParcelableArray("APP_LIST", new Bundle[]{appConfig});
+			
 			Intent i = new Intent();
 			i.setAction(ACTION);
-			i.putExtra(SET_CONFIG, configBundle);
+			i.putExtra(SET_CONFIG, profileConfig);
 			this.cordova.getActivity().sendBroadcast(i);
 		} catch (Exception e) {
 			Log.e(TAG, "BroadcastIntentPlugin.createDataWedgeProfile: Exception occured:" + e.getMessage());
