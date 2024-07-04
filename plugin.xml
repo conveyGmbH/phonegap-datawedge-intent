@@ -4,10 +4,10 @@
 	id="phonegap-datawedge-intent" 
 	version="1.0.0">
 
-	<name>Zebra TC20 Datawedge Receiver</name>
+	<name>Zebra TC20 and TC22 Datawedge Receiver</name>
 	<description>Receives broadcast intent.</description>
 	<license>Apache 2.0</license>
-	<keywords>cordova, zebra, tc20, intent, scanner, plugin</keywords>
+	<keywords>cordova, zebra, tc20, tc22, intent, scanner, plugin</keywords>
 
 	<js-module src="www/broadcast_intent_plugin.js" name="BroadcastIntentPlugin">
 		<clobbers target="navigator.broadcast_intent_plugin" />
