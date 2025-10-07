@@ -1,4 +1,4 @@
-package org.limitstate.intent;
+﻿package org.limitstate.intent;
 
 import android.app.Activity;
 
@@ -118,7 +118,11 @@ public class BroadcastIntentPlugin extends CordovaPlugin {
 				filter.addAction(MY_ACTION);
 
 				Context context = this.cordova.getActivity().getApplicationContext();
+				if (Build.VERSION.SDK_INT >= 34 && context.getApplicationInfo().targetSdkVersion >= 34) {
+					context.registerReceiver(myBroadcastReceiver, filter, Context.RECEIVER_EXPORTED);
+				}else{
 				context.registerReceiver(myBroadcastReceiver, filter);
+				}
 				Log.d(TAG, "BroadcastIntentPlugin.execute: receiver for action=" + MY_ACTION + " registred!");
 
 				Intent i = new Intent();
