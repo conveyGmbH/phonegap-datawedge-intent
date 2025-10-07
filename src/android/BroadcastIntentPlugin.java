@@ -1,4 +1,4 @@
-﻿package org.limitstate.intent;
+package org.limitstate.intent;
 
 import android.app.Activity;
 
